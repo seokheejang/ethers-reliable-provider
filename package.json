@@ -2,9 +2,15 @@
   "name": "ethers-reliable-provider",
   "version": "0.0.1",
   "description": "A reliable ethers.js provider with retry and timeout features.",
-  "main": "index.js",
+  "module": "lib/esm/index.js",
+  "main": "lib/cjs/index.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --detectOpenHandles",
+    "build": "rm -rf ./lib && tsc -p ./tsconfig-esm.json && tsc -p ./tsconfig-cjs.json",
+    "pub:npm": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
