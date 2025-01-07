@@ -1,12 +1,7 @@
 import { ethers } from 'ethers';
 import { RetryOptions, withRetry } from './retry-utils';
 import { hexToDecimal } from '../utils/eth-utils';
-
-interface CustomProviderOptions {
-  timeout?: number; // 요청 타임아웃 (ms)
-  retries?: number; // 최대 재시도 횟수
-  retryDelay?: number; // 재시도 간격 (ms)
-}
+import { CustomProviderOptions } from './type';
 
 export class CustomProvider {
   private provider: ethers.providers.JsonRpcProvider | ethers.providers.WebSocketProvider;
