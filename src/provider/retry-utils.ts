@@ -14,6 +14,8 @@ export async function withRetry<T>(action: () => Promise<T>, options: RetryOptio
       attempt++;
       if (attempt >= retries) {
         throw new Error(`Action failed after ${retries} retries: ${error.message}`);
+      } else {
+        console.log(`Retry attempt: ${attempt}`);
       }
       await delay(retryDelay);
     }

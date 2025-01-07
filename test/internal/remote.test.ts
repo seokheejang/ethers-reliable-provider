@@ -1,5 +1,5 @@
 import { CustomJsonRpcProvider } from '../../src/index';
-const endpoint = 'https://it-full.dknote.net';
+const endpoint = 'http://localhost:8545';
 
 describe('CustomJsonRpcProvider', () => {
   let provider: CustomJsonRpcProvider;
