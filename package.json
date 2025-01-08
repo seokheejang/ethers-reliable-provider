@@ -1,6 +1,6 @@
 {
   "name": "ethers-reliable-provider",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A reliable ethers.js provider with retry and timeout features.",
   "module": "lib/esm/index.js",
   "main": "lib/cjs/index.js",

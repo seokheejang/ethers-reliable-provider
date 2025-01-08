@@ -13,9 +13,19 @@ export class CustomJsonRpcProvider extends ethers.providers.JsonRpcProvider {
     this.retryOptions = { retries, retryDelay };
   }
 
-  async send(method: string, params: any[]): Promise<any> {
+  async send(method: string, params: any[], options?: { signal?: AbortSignal }): Promise<any> {
+    const { signal } = options || {};
+
+    if (signal?.aborted) {
+      throw new Error('Request aborted by the user');
+    }
+
     return withRetry(async () => {
-      return this.withTimeout(super.send(method, params), this.timeout);
+      if (signal) {
+        return this.withAbortableTimeout(super.send(method, params), this.timeout, signal);
+      } else {
+        return this.withTimeout(super.send(method, params), this.timeout);
+      }
     }, this.retryOptions);
   }
 
@@ -32,6 +42,39 @@ export class CustomJsonRpcProvider extends ethers.providers.JsonRpcProvider {
         })
         .catch((error) => {
           clearTimeout(timer);
+          reject(error);
+        });
+    });
+  }
+
+  private withAbortableTimeout<T>(promise: Promise<T>, timeout: number, signal?: AbortSignal): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const timer = setTimeout(() => {
+        reject(new Error(`Request timed out after ${timeout}ms`));
+      }, timeout);
+
+      const onAbort = () => {
+        clearTimeout(timer);
+        reject(new Error('Request aborted by the user'));
+      };
+
+      if (signal) {
+        signal.addEventListener('abort', onAbort);
+      }
+
+      promise
+        .then((result) => {
+          clearTimeout(timer);
+          if (signal) {
+            signal.removeEventListener('abort', onAbort);
+          }
+          resolve(result);
+        })
+        .catch((error) => {
+          clearTimeout(timer);
+          if (signal) {
+            signal.removeEventListener('abort', onAbort);
+          }
           reject(error);
         });
     });
